@@ -1,0 +1,37 @@
+[
+  {
+    "brand_name": "百雀羚",
+    "products": [
+      {
+        "name": "A",
+        "gongxiao": "补水保湿",
+        "chengfen": "",
+        "store": 10000,
+        "cost": 100,
+        "price": 200,
+        "applicable_age": "",
+        "applicable_skin_type": ""
+      },
+      {
+        "name": "B",
+        "gongxiao": "面部修复",
+        "chengfen": "",
+        "store": 2000,
+        "cost": 150,
+        "price": 250,
+        "applicable_age": "",
+        "applicable_skin_type": ""
+      },
+      {
+        "name": "C",
+        "gongxiao": "补水保湿",
+        "chengfen": "",
+        "store": 10000,
+        "cost": 100,
+        "price": 200,
+        "applicable_age": "",
+        "applicable_skin_type": ""
+      }
+    ]
+  }
+]

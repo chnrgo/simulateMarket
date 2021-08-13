@@ -1,0 +1,9 @@
+[
+  {
+    "market_size": 20000,
+    "market_trend": 0.3,
+    "market_agent_enterprise_num": 3,
+    "n_decision_period": 6,
+    "each_enterprise_budget": 2000000
+  }
+]
