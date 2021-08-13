@@ -3,7 +3,12 @@ import pandas as pd
 import os, shutil
 
 
-def init_db(student_id):
+def init_db(student_id: str):
+    """
+    :param student_id: 学生id
+    :return: 当前学生的sqlite数据文件，文件保存在data文件夹下，文件名为simulation_{student_id}.db
+    """
+
     if os.path.exists("data/simulation_{}.db".format(student_id)):
         os.remove("data/simulation_{}.db".format(student_id))
         shutil.copy("data/simulation.db", "data/simulation_{}.db".format(student_id))
