@@ -1,7 +1,10 @@
 import json
+import time
+from datetime import datetime
 
 import sql
 from market.model import Market
+from market.utils.print_time import print_time
 
 
 class ModelRun:
@@ -19,12 +22,17 @@ class ModelRun:
         ## 获取系统参数（由教师端进行控制）
         with open("data/system_setting.json", 'r', encoding='utf-8') as load_f:
             system_setting = json.load(load_f)
+            print_time("已加载系统参数")
 
         ## 获取消费者决策数据文件（由学生进行创建）
         with open(student_init_json_path, 'r', encoding='utf-8') as load_f:
             new_brand = json.load(load_f)
+            print_time("已加载学生决策")
 
         market = Market(k, p, system_setting, student_id)
+        print_time("已完成模型初始化")
 
         for i in range(3):
             market.step()
+
+        print_time("模型运行结束！")

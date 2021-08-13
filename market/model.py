@@ -11,6 +11,12 @@ import networkx as nx
 
 class Market(Model):
     def __init__(self, k, p, system_setting, student_id):
+        """
+        :param k:
+        :param p:
+        :param system_setting:
+        :param student_id:
+        """
         self.student_id = student_id
 
         # 添加调度器
