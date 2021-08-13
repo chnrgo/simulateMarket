@@ -5,7 +5,7 @@ from market.model import Market
 
 
 class ModelRun:
-    def __init__(self, student_id, student_init_json_path, k, p):
+    def __init__(self, student_id: str, student_init_json_path: str, k: int, p: float):
         '''
         :param student_id: 学生id
         :param student_init_json_path: 学生初始化决策json文件地址
@@ -16,7 +16,6 @@ class ModelRun:
         sql.init_db(student_id=student_id)
 
         # 初始化模型
-
         ## 获取系统参数（由教师端进行控制）
         with open("data/system_setting.json", 'r', encoding='utf-8') as load_f:
             system_setting = json.load(load_f)

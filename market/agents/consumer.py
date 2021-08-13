@@ -19,7 +19,6 @@ class Consumer(Agent):
         self.consumer_id = unique_id
         self.name = name
         self.age = self.age_matching(age)
-        print(self.age)
         self.gender = gender
         self.skin_type = skin_type
         self.income_level = income_level
@@ -106,7 +105,7 @@ class Consumer(Agent):
         info['年龄匹配分'] = info.apply(lambda x: '5' if x['consumer_age'] in x['fit_age'] else '0', axis=1)
         # info['肤质匹配分'] =
 
-        print(info)
+        # print(info)
         # return data
 
     def ad_infect(self, df):
