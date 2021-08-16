@@ -6,11 +6,10 @@ import random
 import pandas as pd
 from market.utils.topsis import topsis
 
-# 显示所有列
-pd.set_option('display.max_columns', None)
-# 显示所有行
-pd.set_option('display.max_rows', None)
-
+pd.set_option('display.unicode.ambiguous_as_wide', True)
+pd.set_option('display.unicode.east_asian_width', True)
+pd.set_option('display.width', 180) # 设置打印宽度(**重要**)
+pd.set_option('expand_frame_repr', False)
 
 class Consumer(Agent):
     def __init__(self, unique_id, model, name, age, gender, skin_type, income_level, prefer_brand, prefer_gongxiao,
@@ -42,8 +41,13 @@ class Consumer(Agent):
 
     def step(self) -> None:
         # self.state_change(self.state)
-        self.create_topsis_data()
+        data = self.create_topsis_data()
 
+        topsis_sort_data = topsis(data)[0]
+        topsis_sort_data.sort_values(by=['排序'], ascending=True, inplace=True)
+
+
+        print(topsis_sort_data)
         # df = ['0', '1001', '4001', '900001', 20, 'online', 'ad']
         # self.connect_with_neighbors(df)
         #
@@ -73,7 +77,7 @@ class Consumer(Agent):
 
         # 获取data
         data = []
-        topsis(data)
+        print(topsis(data))
 
         print("wants")
 
@@ -102,11 +106,43 @@ class Consumer(Agent):
         info['consumer_prefer_brand'] = self.prefer_brand
         info['consumer_prefer_gongxiao'] = self.prefer_gongxiao
 
-        info['年龄匹配分'] = info.apply(lambda x: '5' if x['consumer_age'] in x['fit_age'] else '0', axis=1)
-        # info['肤质匹配分'] =
+        info['年龄匹配分'] = info.apply(lambda x: 5 if x['consumer_age'] in x['fit_age'] else 1, axis=1)
+        info['肤质匹配分'] = info.apply(lambda x: self.skin_type_match(x['skin_type'], x['consumer_skin']), axis=1)
+        #info['功效偏好分'] = info.apply(lambda )
 
-        # print(info)
-        # return data
+        info2 = info.set_index('id')
+
+        # 邻居偏好分
+
+
+        data = info2[['年龄匹配分', '肤质匹配分']]
+
+        print(data)
+        data['年龄匹配分'].astype('float')
+        data['肤质匹配分'].astype('float')
+
+        print(data.dtypes)
+        return data
+
+    def gongxiao_match(self, seq1, seq2):
+        res = []
+        for x in seq2:
+            if x in seq1:
+                res.append(x)
+
+        return len(res)
+
+
+    def skin_type_match(self, seq1, seq2):
+        res = []
+        if seq2 == "any" or seq1 == "any":
+            return 5
+        else:
+            for x in seq2:
+                if x in seq1:
+                    res.append(x)
+            return len(res) + 1
+
 
     def ad_infect(self, df):
         self.ad_infect_list.append(df)

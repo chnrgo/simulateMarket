@@ -22,6 +22,7 @@ class ModelRun:
         ## 获取系统参数（由教师端进行控制）
         with open("data/system_setting.json", 'r', encoding='utf-8') as load_f:
             system_setting = json.load(load_f)
+            print(system_setting)
             print_time("已加载系统参数")
 
         ## 获取消费者决策数据文件（由学生进行创建）
@@ -32,7 +33,10 @@ class ModelRun:
         market = Market(k, p, system_setting, student_id)
         print_time("已完成模型初始化")
 
-        for i in range(3):
+
+        n_period = system_setting[0]["n_decision_period"]
+
+        for i in range(n_period * 90):
             market.step()
 
         print_time("模型运行结束！")
