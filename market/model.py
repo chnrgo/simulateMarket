@@ -70,16 +70,17 @@ class Market(Model):
         self.schedule.step()
 
 def compute_product_market_share(model):
-    print("AAAAAAA")
+    consumers_buy_list = [x.product for x in model.schedule.agents if isinstance(x, Consumer)]
     products = [x for x in model.schedule.agents if isinstance(x, Product)]
     info = []
     for i in products:
-        info.append([model.schedule.time, i.product_id, i.name, len(i.consumers_list)])
+        info.append([i.product_id, i.name, consumers_buy_list.count(i)])
     return info
 
 def compute_brand_market_share(model):
+    consumers_buy_list = [x.brand for x in model.schedule.agents if isinstance(x, Consumer)]
     brands = [x for x in model.schedule.agents if isinstance(x, Brand)]
     info = []
     for i in brands:
-        info.append([model.schedule.time, i.brand_id, i.brand_name, len(i.consumers_list)])
+        info.append([i.brand_id, i.brand_name, consumers_buy_list.count(i)])
     return info

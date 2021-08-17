@@ -2,16 +2,17 @@ import json
 import time
 from datetime import datetime
 
-import pandas as pd
+import modin.pandas as pd
 
 import sql
+from market.agents.brand import Brand
 from market.model import Market
 from market.utils.print_time import print_time
+import matplotlib.pyplot as plt
 
-pd.set_option('display.unicode.ambiguous_as_wide', True)
-pd.set_option('display.unicode.east_asian_width', True)
-pd.set_option('display.width', 180) # 设置打印宽度(**重要**)
-pd.set_option('expand_frame_repr', False)
+pd.set_option('display.max_columns', None)  # or 1000
+pd.set_option('display.max_rows', None)  # or 1000
+pd.set_option('display.max_colwidth', -1)  # or 199
 
 
 class ModelRun:
@@ -43,17 +44,24 @@ class ModelRun:
 
         n_period = system_setting[0]["n_decision_period"]
 
-        for i in range(2):
+        time1 = time.time()
+        for i in range(90):
             market.step()
 
+
         data = market.datacollector.get_model_vars_dataframe()
+        brand_market_share = data['BrandMarketShare']
 
-        for i in range(6):
-            data["brand_{}".format(i + 1)] = data['BrandMarketShare'].map(lambda x: x[i][3])
-            data["brand_{}".format(i + 1)].columns = [data['BrandMarketShare'].iloc[0][i][2]]
+        for i in range(len([x for x in market.schedule.agents if isinstance(x, Brand)])):
+            data["{}".format(brand_market_share[0][i][1])] = data['BrandMarketShare'].map(lambda x: x[i][2])
 
-        print(data)
+        plot_data = data[[x.brand_name for x in market.schedule.agents if isinstance(x, Brand)]]
+        print(plot_data)
+        plot_data.plot()
+        plt.rcParams['font.sans-serif'] = ['SimHei']  # 显示中文标签
+        plt.rcParams['axes.unicode_minus'] = False  # 设置正常显示符号
+        plt.show()
 
-        print(data.dtypes)
-
+        time2 = time.time()
+        print(time2 - time1)
         print_time("模型运行结束！")

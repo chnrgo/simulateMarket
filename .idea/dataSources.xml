@@ -1,43 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="simulation.db" uuid="15f00f1e-53aa-4ff0-903c-4b936aafa675">
+    <data-source source="LOCAL" name="simulation.db" uuid="26bde508-81cc-4ecb-a983-a7e23d9a62e1">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
       <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/data/simulation.db</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
-    </data-source>
-    <data-source source="LOCAL" name="simulation_0000" uuid="06d96fd2-4f4b-418c-ba4b-78c1ee0b2130">
-      <driver-ref>sqlite.xerial</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/data/simulation_0000.db</jdbc-url>
-      <working-dir>$ProjectFileDir$</working-dir>
-      <libraries>
-        <library>
-          <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.34.0/sqlite-jdbc-3.34.0.jar</url>
-        </library>
-      </libraries>
-    </data-source>
-    <data-source source="LOCAL" name="teacher_setting.db" uuid="df042cbe-b590-46f6-a82f-3bcd15070d84">
-      <driver-ref>sqlite.xerial</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/data/teacher_setting.db</jdbc-url>
-      <working-dir>$ProjectFileDir$</working-dir>
-    </data-source>
-    <data-source source="LOCAL" name="simulation_0002" uuid="076683c8-ede4-4545-ae13-5a91594c4a67">
-      <driver-ref>sqlite.xerial</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/data/simulation_0002.db</jdbc-url>
-      <working-dir>$ProjectFileDir$</working-dir>
-      <libraries>
-        <library>
-          <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.34.0/sqlite-jdbc-3.34.0.jar</url>
-        </library>
-      </libraries>
     </data-source>
   </component>
 </project>
