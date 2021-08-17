@@ -14,8 +14,15 @@ class Brand(Agent):
         all_products = [x for x in self.model.schedule.agents if isinstance(x, Product)]
         self.products = [x for x in all_products if x.belong_brand_id == self.brand_id]
 
+        self.consumers_list = []
+
     def step(self) -> None:
-        pass
+        self.update_consumers_list()
+
+    def update_consumers_list(self):
+        for i in self.products:
+            self.consumers_list = self.consumers_list + i.consumers_list
+
 
     def create_staregy(self):
         for i in self.products:

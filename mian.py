@@ -2,9 +2,16 @@ import json
 import time
 from datetime import datetime
 
+import pandas as pd
+
 import sql
 from market.model import Market
 from market.utils.print_time import print_time
+
+pd.set_option('display.unicode.ambiguous_as_wide', True)
+pd.set_option('display.unicode.east_asian_width', True)
+pd.set_option('display.width', 180) # 设置打印宽度(**重要**)
+pd.set_option('expand_frame_repr', False)
 
 
 class ModelRun:
@@ -36,7 +43,17 @@ class ModelRun:
 
         n_period = system_setting[0]["n_decision_period"]
 
-        for i in range(n_period * 90):
+        for i in range(2):
             market.step()
+
+        data = market.datacollector.get_model_vars_dataframe()
+
+        for i in range(6):
+            data["brand_{}".format(i + 1)] = data['BrandMarketShare'].map(lambda x: x[i][3])
+            data["brand_{}".format(i + 1)].columns = [data['BrandMarketShare'].iloc[0][i][2]]
+
+        print(data)
+
+        print(data.dtypes)
 
         print_time("模型运行结束！")

@@ -1,5 +1,6 @@
 from mesa import Agent
 
+
 class Product(Agent):
     def __init__(self, unique_id, model, brand_id, name, price, score, cost, chengfen, gongxiao, stock,
                  online_stock, skin_type):
@@ -16,6 +17,11 @@ class Product(Agent):
         self.online_stock = online_stock
         self.skin_type = skin_type
 
-    def step(self) -> None:
-        pass
+        self.consumers_list = []
 
+    def step(self) -> None:
+        print("==============>")
+        print(self.consumers_list)
+
+    def add_consumer(self, consumer):
+        self.consumers_list.append(consumer)

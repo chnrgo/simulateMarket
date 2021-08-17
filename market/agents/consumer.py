@@ -4,6 +4,8 @@ from mesa import Agent
 import sql
 import random
 import pandas as pd
+
+from market.agents.product import Product
 from market.utils.topsis import topsis
 
 pd.set_option('display.unicode.ambiguous_as_wide', True)
@@ -47,7 +49,17 @@ class Consumer(Agent):
         topsis_sort_data.sort_values(by=['排序'], ascending=True, inplace=True)
 
 
-        print(topsis_sort_data)
+
+        #buy
+        product_id = topsis_sort_data.index.values[0]
+        self.product = self.get_this_product(product_id)
+        self.product.add_consumer(self)
+
+
+        # print(topsis_sort_data.index.values)
+        # print(self.product)
+        # top_1_choice = topsis_sort_data.iloc[0]
+        # print(top_1_choice['id'])
         # df = ['0', '1001', '4001', '900001', 20, 'online', 'ad']
         # self.connect_with_neighbors(df)
         #
@@ -110,6 +122,8 @@ class Consumer(Agent):
         info['肤质匹配分'] = info.apply(lambda x: self.skin_type_match(x['skin_type'], x['consumer_skin']), axis=1)
         #info['功效偏好分'] = info.apply(lambda )
 
+        #info['品牌偏好分']
+
         info2 = info.set_index('id')
 
         # 邻居偏好分
@@ -117,11 +131,10 @@ class Consumer(Agent):
 
         data = info2[['年龄匹配分', '肤质匹配分']]
 
-        print(data)
+
         data['年龄匹配分'].astype('float')
         data['肤质匹配分'].astype('float')
 
-        print(data.dtypes)
         return data
 
     def gongxiao_match(self, seq1, seq2):
@@ -174,3 +187,8 @@ class Consumer(Agent):
             return 'F'
         elif age >= 45:
             return 'G'
+
+    def get_this_product(self, product_id) -> Product:
+        products = [x for x in self.model.schedule.agents if isinstance(x, Product)]
+        this_product = [x for x in products if x.product_id == product_id][0]
+        return this_product

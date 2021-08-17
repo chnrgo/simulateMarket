@@ -60,7 +60,8 @@ class Market(Model):
             index_temp = index_temp + 1
 
         self.datacollector = DataCollector(
-            model_reporters={"MarketShare": compute_market_share},
+            model_reporters={"ProductMarketShare": compute_product_market_share,
+                             "BrandMarketShare": compute_brand_market_share},
             # agent_reporters={""}
         )
 
@@ -68,10 +69,17 @@ class Market(Model):
         self.datacollector.collect(self)
         self.schedule.step()
 
-def compute_market_share(model):
-    # consumers = [agent.product for agent in model.schedule.agents]
-    consumers = [x for x in model.schedule.agents if isinstance(x, Consumer)]
-    products = [agent.product for agent in consumers]
-    # print("A")
-    # print(products)
-    # brand_market_share
+def compute_product_market_share(model):
+    print("AAAAAAA")
+    products = [x for x in model.schedule.agents if isinstance(x, Product)]
+    info = []
+    for i in products:
+        info.append([model.schedule.time, i.product_id, i.name, len(i.consumers_list)])
+    return info
+
+def compute_brand_market_share(model):
+    brands = [x for x in model.schedule.agents if isinstance(x, Brand)]
+    info = []
+    for i in brands:
+        info.append([model.schedule.time, i.brand_id, i.brand_name, len(i.consumers_list)])
+    return info
