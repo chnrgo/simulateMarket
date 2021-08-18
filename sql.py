@@ -45,3 +45,10 @@ def get_data_df(sql, student_id):
     conn = connect_db(student_id)
     df = pd.read_sql_query(sql, conn)
     return df
+
+def insert(sql, student_id):
+    conn = connect_db(student_id)
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    conn.commit()
+    conn.close()

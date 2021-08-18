@@ -4,33 +4,39 @@
     "products": [
       {
         "name": "A",
-        "gongxiao": "补水保湿",
-        "chengfen": "",
-        "store": 10000,
-        "cost": 100,
         "price": 200,
-        "applicable_age": "",
-        "applicable_skin_type": ""
+        "score": 94,
+        "cost": 100,
+        "chengfen": "",
+        "gongxiao": "补水保湿",
+        "stock": 10000,
+        "online_stock": 800,
+        "skin_type": "any",
+        "fit_age": "ABC"
       },
       {
         "name": "B",
-        "gongxiao": "面部修复",
+        "price": 320,
+        "score": 94,
+        "cost": 100,
         "chengfen": "",
-        "store": 2000,
-        "cost": 150,
-        "price": 250,
-        "applicable_age": "",
-        "applicable_skin_type": ""
+        "gongxiao": "面部修复",
+        "stock": 10000,
+        "online_stock": 800,
+        "skin_type": "any",
+        "fit_age": "ABC"
       },
       {
         "name": "C",
-        "gongxiao": "补水保湿",
-        "chengfen": "",
-        "store": 10000,
+        "price": 320,
+        "score": 94,
         "cost": 100,
-        "price": 200,
-        "applicable_age": "",
-        "applicable_skin_type": ""
+        "chengfen": "",
+        "gongxiao": "补水保湿",
+        "stock": 10000,
+        "online_stock": 800,
+        "skin_type": "any",
+        "fit_age": "ABC"
       }
     ]
   }

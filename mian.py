@@ -2,7 +2,7 @@ import json
 import time
 from datetime import datetime
 
-import modin.pandas as pd
+import pandas as pd
 
 import sql
 from market.agents.brand import Brand
@@ -16,10 +16,12 @@ pd.set_option('display.max_colwidth', -1)  # or 199
 
 
 class ModelRun:
-    def __init__(self, student_id: str, student_init_json_path: str, k: int, p: float):
+    def __init__(self, student_id: str, student_init_json_path: str, k: int, p: float,
+                 system_setting_json_path="data/system_setting.json"):
         '''
         :param student_id: 学生id
         :param student_init_json_path: 学生初始化决策json文件地址
+        :param system_setting_json_path: 系统初始化参数json文件地址
         :param k: 小世界网络参数k，邻居个数
         :param p: 小世界网络参数p，重连概率
         '''
@@ -28,40 +30,70 @@ class ModelRun:
 
         # 初始化模型
         ## 获取系统参数（由教师端进行控制）
-        with open("data/system_setting.json", 'r', encoding='utf-8') as load_f:
+        with open(system_setting_json_path, 'r', encoding='utf-8') as load_f:
             system_setting = json.load(load_f)
-            print(system_setting)
             print_time("已加载系统参数")
 
-        ## 获取消费者决策数据文件（由学生进行创建）
-        with open(student_init_json_path, 'r', encoding='utf-8') as load_f:
-            new_brand = json.load(load_f)
-            print_time("已加载学生决策")
-
         market = Market(k, p, system_setting, student_id)
-        print_time("已完成模型初始化")
-
+        print_time("正在初始化模型---预计1min")
 
         n_period = system_setting[0]["n_decision_period"]
 
         time1 = time.time()
-        for i in range(90):
+        for i in range(180):
             market.step()
 
+        print_time("已完成模型初始化")
+        self.plot_market_share(market)
+        print_time("当前市场环境已向学生展示")
 
-        data = market.datacollector.get_model_vars_dataframe()
-        brand_market_share = data['BrandMarketShare']
+        print_time("请学生进行第1期决策")
+        student_init_json_path = input("请输入第1期决策文件：")
 
-        for i in range(len([x for x in market.schedule.agents if isinstance(x, Brand)])):
-            data["{}".format(brand_market_share[0][i][1])] = data['BrandMarketShare'].map(lambda x: x[i][2])
+        ## 获取消费者决策数据文件（由学生进行创建）
+        with open(student_init_json_path, 'r', encoding='utf-8') as load_f:
+            my_brand = json.load(load_f)
+            print_time("已加载学生决策")
 
-        plot_data = data[[x.brand_name for x in market.schedule.agents if isinstance(x, Brand)]]
-        print(plot_data)
-        plot_data.plot()
-        plt.rcParams['font.sans-serif'] = ['SimHei']  # 显示中文标签
-        plt.rcParams['axes.unicode_minus'] = False  # 设置正常显示符号
-        plt.show()
+        market.student_strategy_init(my_brand)
+        print_time("正在向模型加载学生第1期决策")
+        print_time("开始第1期决策模拟")
+        for i in range(90):
+            market.step()
+        print_time("已完成第1期模拟")
+        self.plot_market_share(market)
+        print_time("当前市场环境已向学生展示")
 
         time2 = time.time()
         print(time2 - time1)
         print_time("模型运行结束！")
+
+    def plot_market_share(self, model):
+        data = model.datacollector.get_model_vars_dataframe()
+        temp = data.to_dict()
+        print(temp)
+        info = []
+        for i in range(len(temp['data'])):
+            print(temp['data'][i])
+            info.append(temp['data'][i])
+        print(data)
+        print(info)
+        plot_data = pd.DataFrame(info)
+        print(plot_data)
+
+        # data.fillna("[my_brand, 百雀羚, 0]")
+        # print(data)
+        # # n_brand = len([x for x in model.schedule.agents if isinstance(x, Brand)])
+        # brand_mame_list = [x.brand_name for x in model.schedule.agents if isinstance(x, Brand)]
+        # # for i in range(n_brand):
+        # #     data["{}".format(brand_market_share[0][i][1])] = data['BrandMarketShare'].map(lambda x: x[i][2])
+        # for i, bn in enumerate(brand_mame_list):
+        #     data["{}".format(bn)] = data['BrandMarketShare'].map(lambda x: x[i][2] if x[i] else 0)
+        #
+        # data.fillna("[my_brand, 百雀羚, 0]")
+        #
+        # plot_data = data.iloc[:, 2:]
+        plot_data.plot()
+        plt.rcParams['font.sans-serif'] = ['SimHei']  # 显示中文标签
+        plt.rcParams['axes.unicode_minus'] = False  # 设置正常显示符号
+        plt.show()

@@ -52,6 +52,10 @@ class Consumer(Agent):
         # self.state_change(self.state)
         self.state_change(self.state)
 
+        self.info = self.init_topsis_data()
+
+
+
 
     def state_change(self, state):
         '''
@@ -90,7 +94,9 @@ class Consumer(Agent):
         data = self.update_topsis_data(self.info)
         topsis_sort_data = topsis(data)[0]
         topsis_sort_data.sort_values(by=['排序'], ascending=True, inplace=True)
+        # print(topsis_sort_data)
         product_id = topsis_sort_data.index.values[0]
+        print(product_id)
         self.product = self.get_this_product(product_id)
         brand_id = self.product.belong_brand_id
         self.brand = self.get_this_brand(brand_id)
@@ -132,7 +138,6 @@ class Consumer(Agent):
         data['年龄匹配分'].astype('float')
         data['肤质匹配分'].astype('float')
         data['品牌偏好分'].astype('float')
-        print(data)
         return data
 
     def gongxiao_match(self, seq1, seq2):
@@ -188,6 +193,7 @@ class Consumer(Agent):
 
     def get_this_product(self, product_id) -> Product:
         products = [x for x in self.model.schedule.agents if isinstance(x, Product)]
+        print([x.product_id for x in products])
         this_product = [x for x in products if x.product_id == product_id][0]
         return this_product
 

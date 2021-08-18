@@ -4,7 +4,7 @@ from market.agents.product import Product
 
 
 class Brand(Agent):
-    def __init__(self, unique_id, model, brand_name, yield_change_rate, price_change_rate, ad_strategy):
+    def __init__(self, unique_id, model, brand_name, yield_change_rate=None, price_change_rate=None, ad_strategy=None):
         super(Brand, self).__init__(unique_id, model)
         self.brand_id = unique_id
         self.brand_name = brand_name
