@@ -37,32 +37,34 @@ class ModelRun:
         market = Market(k, p, system_setting, student_id)
         print_time("正在初始化模型---预计1min")
 
-        n_period = system_setting[0]["n_decision_period"]
-
         time1 = time.time()
-        for i in range(180):
+        for i in range(91):
             market.step()
 
         print_time("已完成模型初始化")
         self.plot_market_share(market)
         print_time("当前市场环境已向学生展示")
 
-        print_time("请学生进行第1期决策")
-        student_init_json_path = input("请输入第1期决策文件：")
+        # 获取运行周期
+        n_period = system_setting[0]["n_decision_period"]
+        for i in range(n_period):
 
-        ## 获取消费者决策数据文件（由学生进行创建）
-        with open(student_init_json_path, 'r', encoding='utf-8') as load_f:
-            my_brand = json.load(load_f)
-            print_time("已加载学生决策")
+            print_time("请学生进行第{}期决策".format(i))
+            if i == 0:
+                student_init_json_path = input("请输入第{}期决策文件：".format(i))
+                ## 获取消费者决策数据文件（由学生进行创建）
+                with open(student_init_json_path, 'r', encoding='utf-8') as load_f:
+                    my_brand = json.load(load_f)
+                    print_time("已加载学生决策")
+                market.student_strategy_init(my_brand)
 
-        market.student_strategy_init(my_brand)
-        print_time("正在向模型加载学生第1期决策")
-        print_time("开始第1期决策模拟")
-        for i in range(90):
-            market.step()
-        print_time("已完成第1期模拟")
-        self.plot_market_share(market)
-        print_time("当前市场环境已向学生展示")
+            print_time("正在向模型加载学生第{}期决策".format(i))
+            print_time("开始第{}期决策模拟".format(i))
+            for j in range(90):
+                market.step()
+            print_time("已完成第{}期模拟".format(i))
+            self.plot_market_share(market)
+            print_time("当前市场环境已向学生展示")
 
         time2 = time.time()
         print(time2 - time1)
@@ -71,29 +73,23 @@ class ModelRun:
     def plot_market_share(self, model):
         data = model.datacollector.get_model_vars_dataframe()
         temp = data.to_dict()
-        print(temp)
+        # print(temp)
         info = []
         for i in range(len(temp['data'])):
-            print(temp['data'][i])
+            # print(temp['data'][i])
             info.append(temp['data'][i])
-        print(data)
-        print(info)
-        plot_data = pd.DataFrame(info)
-        print(plot_data)
-
-        # data.fillna("[my_brand, 百雀羚, 0]")
         # print(data)
-        # # n_brand = len([x for x in model.schedule.agents if isinstance(x, Brand)])
-        # brand_mame_list = [x.brand_name for x in model.schedule.agents if isinstance(x, Brand)]
-        # # for i in range(n_brand):
-        # #     data["{}".format(brand_market_share[0][i][1])] = data['BrandMarketShare'].map(lambda x: x[i][2])
-        # for i, bn in enumerate(brand_mame_list):
-        #     data["{}".format(bn)] = data['BrandMarketShare'].map(lambda x: x[i][2] if x[i] else 0)
-        #
-        # data.fillna("[my_brand, 百雀羚, 0]")
-        #
-        # plot_data = data.iloc[:, 2:]
-        plot_data.plot()
+        # print(info)
+        plot_data = pd.DataFrame(info)
+        if len(plot_data.columns) == 6:
+            plot_data.columns=['产品1', '产品2', '产品3', '产品4', '产品5', '产品6']
+        else:
+            plot_data.columns = ['产品1', '产品2', '产品3', '产品4', '产品5', '产品6', '产品7']
+        p = plot_data[['产品1', '产品2', '产品3']]
+        # print(p)
+
+        # plot_data.plot()
+        p.plot()
         plt.rcParams['font.sans-serif'] = ['SimHei']  # 显示中文标签
         plt.rcParams['axes.unicode_minus'] = False  # 设置正常显示符号
         plt.show()

@@ -1,3 +1,5 @@
+import random
+
 from mesa import Model
 from mesa.space import NetworkGrid
 from mesa.time import SimultaneousActivation
@@ -19,6 +21,7 @@ class Market(Model):
         """
 
         self.student_id = student_id
+        self.system_setting = system_setting[0]
 
         # 添加调度器
         self.schedule = SimultaneousActivation(self)
@@ -30,6 +33,7 @@ class Market(Model):
         sql_consumer = "SELECT * FROM consumer"
 
         brands = sql.get_data(sql_brand, student_id)
+        print(brands)
         products = sql.get_data(sql_product, student_id)
         consumers = sql.get_data(sql_consumer, student_id)
 
@@ -66,12 +70,51 @@ class Market(Model):
             model_reporters={"data": compute}
         )
 
+        self.consumer_list = []
+        self.in_market_consumer_list = []
+        self.not_in_market_consumer_list = []
+
     def step(self) -> None:
+        print(self.schedule.time)
+
+        self.market_control()
         self.datacollector.collect(self)
         self.schedule.step()
 
+    def market_control(self):
+        if self.schedule.time == 0:
+            market_size = self.system_setting['market_size']
+            # 根据当前市场规模从人群中抽取样本
+            consumers = [x for x in self.schedule.agents if isinstance(x, Consumer)]
+            self.consumer_list = consumers
+            consumers_at_0 = random.sample(consumers, market_size)
+            self.in_market_consumer_list = consumers_at_0
+            self.not_in_market_consumer_list = list(set(self.consumer_list) - set(self.in_market_consumer_list))
+            for x in consumers_at_0:
+                x.in_market = True
+
+        if (self.schedule.time - 1) % 90 == 0:
+            market_trend = self.system_setting['market_trend']
+            market_size = self.system_setting['market_size']
+            num = int(market_trend * market_size)
+            if market_trend > 0:
+                add_consumers = random.sample(self.not_in_market_consumer_list, num)
+                self.in_market_consumer_list = self.in_market_consumer_list + add_consumers
+                self.not_in_market_consumer_list = list(set(self.not_in_market_consumer_list) - set(add_consumers))
+                for x in add_consumers:
+                    x.in_market = True
+            elif market_trend < 0:
+                del_consumers = random.sample(self.in_market_consumer_list, num)
+                self.in_market_consumer_list = list(set(self.in_market_consumer_list) - set(del_consumers))
+                self.not_in_market_consumer_list = self.not_in_market_consumer_list + del_consumers
+                for x in del_consumers:
+                    x.in_market = False
+            else:
+                pass
+
     def student_strategy_init(self, my_brand):
         brand = Brand(8000, self, my_brand[0]['brand_name'])
+        brand.status = 'student'
         self.schedule.add(brand)
         sql_new_brand = "INSERT INTO brand (id, brand_name)  VALUES ({}, '{}')".format(brand.brand_id, brand.brand_name)
         sql.insert(sql_new_brand, self.student_id)
@@ -80,6 +123,7 @@ class Market(Model):
             product = Product(800000 + i , self, 8000, p['name'], p['price'], p['score'], p['cost'],
                                  p['chengfen'], p['gongxiao'], p['stock'], p['online_stock'], p['skin_type'],
                                  p['fit_age'])
+            product.ad_strategy = p['ad_strategy']
             brand.products.append(product)
             self.schedule.add(product)
             sql_new_product = "INSERT INTO product (id, brand_id, name, price, score, cost, chengfen, gongxiao, stock, online_stock, skin_type, fit_age)" \

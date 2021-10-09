@@ -5,7 +5,7 @@ from mesa import Agent
 import sql
 import random
 import modin.pandas as pd
-import swifter
+import numpy as np
 
 from market.agents.brand import Brand
 from market.agents.product import Product
@@ -29,37 +29,38 @@ class Consumer(Agent):
         self.prefer_brand = prefer_brand
         self.prefer_gongxiao = prefer_gongxiao
         self.node_id = node_id
-
         self.state = "potentialUser"
-
-        self.intention_threshold = random.random()
-        self.intention = random.random()
-
+        self.intention_threshold = random.random() + 0.3
+        self.intention = random.random() * 0.5
         self.duration = 30
-
         self.product = None
         self.brand = None
+        self.neighbors = None
+        self.buy_online_prefer = random.uniform(0,1)
+        self.info = None
 
-        self.ad_infect_list = []
+        #判定该消费者是否加入市场，进行购买行为
+        self.in_market = False
 
-        self.neighbor_infect_list = []
+        #广告偏好系数{'代言直播'，'网页广告'，'搜索引擎', '新媒体', '路演', '店面广告', '印刷品'}
+        self.ad_prefer_coef = np.random.rand(7)
 
-        self.buy_way = "online"
-
-        self.info = self.init_topsis_data()
 
     def step(self) -> None:
-        # self.state_change(self.state)
-        self.state_change(self.state)
 
-        self.info = self.init_topsis_data()
+        #初始化邻居
+        if self.model.schedule.time == 0:
+            self.neighbors = self.get_neighbors()
+            self.info = self.init_topsis_data()
 
-
+        if self.model.schedule.time >= 1 & self.in_market == True:
+            self.state_change(self.state)
 
 
     def state_change(self, state):
         '''
         消费者状态变迁函数
+        消费者在三种状态中切换
         :return: self.state
         '''
         states = {
@@ -76,13 +77,14 @@ class Consumer(Agent):
             self.state = "wantsToBuy"
             self.intention = 0
         else:
-            self.intention += 0.05
+            self.intention += 0.005
 
     def wantsToBuy(self):
-        if random.random() > 0.5:
-            self.buy()
-            self.state = "User"
-            self.duration = random.randint(25, 40)
+        if random.random() > 0.7:
+            if self.buy():
+                self.state = "User"
+                self.connect_neighbors()
+                self.duration = random.randint(25, 40)
 
     def user(self):
         if self.duration >= 0:
@@ -94,18 +96,72 @@ class Consumer(Agent):
         data = self.update_topsis_data(self.info)
         topsis_sort_data = topsis(data)[0]
         topsis_sort_data.sort_values(by=['排序'], ascending=True, inplace=True)
-        # print(topsis_sort_data)
         product_id = topsis_sort_data.index.values[0]
-        print(product_id)
         self.product = self.get_this_product(product_id)
+
+        # #判断当前商品是否有货可以购买
+        # if self.product.stock > 0:
+        #     #判断当前用户的购买方式
+        #     buy_online_coef = random.uniform(0,1)
+        #     #如果大于0.35,则选择线上购买，否则线下购买
+        #     if buy_online_coef >= 0.35:
+        #         if self.product.online_stock > 0:
+        #             # 更新该产品库存信息
+        #             self.product.stock = self.product.stock - 1
+        #             self.product.online_stock = self.product.online_stock - 1
+        #             # 向产品类中的order_list添加记录
+        #             buy_info = [self.model.schedule.time, self.consumer_id, self.name, self.product.product_id, self.product.name, "online"]
+        #             self.product.order_list.append(buy_info)
+        #             return True
+        #         else:
+        #             #切换渠道购买
+        #             if random.random() > 0.5:
+        #                 if self.product.stock - self.product.online_stock > 0:
+        #                     self.product.stock = self.product.stock - 1
+        #                     buy_info = [self.model.schedule.time, self.consumer_id, self.name, self.product.product_id,
+        #                                 self.product.name, "offline"]
+        #                     self.product.order_list.append(buy_info)
+        #                     return True
+        #                 else:
+        #                     #未成功购买
+        #                     return False
+        #             else:
+        #                 #未成功购买
+        #                 return False
+        #
+        #     if buy_online_coef < 0.35:
+        #         if self.product.stock - self.product.online_stock > 0:
+        #             self.product.stock = self.product.stock - 1
+        #             buy_info = [self.model.schedule.time, self.consumer_id, self.name, self.product.product_id, self.product.name, "offline"]
+        #             self.product.order_list.append(buy_info)
+        #             return True
+        #         else:
+        #             #切换渠道购买
+        #             if random.random() > 0.5:
+        #                 if self.product.online_stock > 0:
+        #                     # 更新该产品库存信息
+        #                     self.product.stock = self.product.stock - 1
+        #                     self.product.online_stock = self.product.online_stock - 1
+        #                     # 向产品类中的order_list添加记录
+        #                     buy_info = [self.model.schedule.time, self.consumer_id, self.name, self.product.product_id,
+        #                                 self.product.name, "online"]
+        #                     self.product.order_list.append(buy_info)
+        #                     return True
+        #                 else:
+        #                     return False
+        #             else:
+        #                 return False
+        #
+        # if self.product.stock <= 0:
+        #     out_of_buy_info = [self.model.schedule.time, self.consumer_id, self.name, self.product.product_id, self.product.name]
+        #     self.product.out_of_order_list.append(out_of_buy_info)
         brand_id = self.product.belong_brand_id
         self.brand = self.get_this_brand(brand_id)
 
-    def connect_with_neighbors(self, df):
+    def get_neighbors(self):
         neighbor_nodes = self.model.consumer_grid.get_neighbors(self.node_id)
         neighbors = self.model.consumer_grid.get_cell_list_contents(neighbor_nodes)
-        for i in neighbors:
-            i.neighbor_infect(df)
+        return neighbors
 
     def get_product_info(self):
         student_id = self.model.student_id
@@ -119,25 +175,23 @@ class Consumer(Agent):
         info['consumer_skin'] = self.skin_type
         info['consumer_prefer_brand'] = self.prefer_brand
         info['consumer_prefer_gongxiao'] = self.prefer_gongxiao
+        info['neighbors_effect'] = 1
+        info['ad_effect'] = 1
         return info
 
     def update_topsis_data(self, info):
         info['年龄匹配分'] = info.apply(lambda x: random.uniform(3.5, 5) if x['consumer_age'] in x['fit_age'] else random.uniform(1,3.5), axis=1)
         info['肤质匹配分'] = info.apply(lambda x: self.skin_type_match(x['skin_type'], x['consumer_skin']), axis=1)
-        #info['功效偏好分'] = info.apply(lambda )
-
         info['品牌偏好分'] = info.apply(lambda x: random.uniform(3.5, 5) if x['consumer_prefer_brand'] == x['brand_name'] else random.uniform(1, 3.5), axis=1)
-
+        info['邻居偏好分'] = info['neighbors_effect']
+        info['广告偏好分'] = info['ad_effect']
         info2 = info.set_index('id')
-
-        # 邻居偏好
-
-        data = info2[['年龄匹配分', '肤质匹配分', '品牌偏好分']]
-
-
+        data = info2[['年龄匹配分', '肤质匹配分', '品牌偏好分', '邻居偏好分', '广告偏好分']]
         data['年龄匹配分'].astype('float')
         data['肤质匹配分'].astype('float')
         data['品牌偏好分'].astype('float')
+        data['邻居偏好分'].astype('float')
+        data['广告偏好分'].astype('float')
         return data
 
     def gongxiao_match(self, seq1, seq2):
@@ -149,7 +203,7 @@ class Consumer(Agent):
         return len(res)
 
 
-    def skin_type_match(self, seq1, seq2):
+    def  skin_type_match(self, seq1, seq2):
         res = []
         if seq2 == "any" or seq1 == "any":
             return random.uniform(3.5, 5)
@@ -163,17 +217,33 @@ class Consumer(Agent):
     def ad_infect(self, df):
         self.ad_infect_list.append(df)
 
-    def neighbor_infect(self, df):
-        self.neighbor_infect_list.append(df)
+    def connect_neighbors(self):
+        for i in self.neighbors:
+            i.infected_by_neighbors(self.product)
+
+    def infected_by_neighbors(self, product: Product):
+        self.info.loc[self.info.id == product.product_id, 'neighbors_effect'] = \
+             self.info.loc[self.info.id == product.product_id, 'neighbors_effect'].values + 1
+
+        # self.info[(self.info['id'] == product.product_id)]['neighbors_effect'][0] \
+        #     = self.info[(self.info['id'] == product.product_id)]['neighbors_effect'][0] + 1
+
+    def infected_by_ad(self, product_id, ad_info):
+        # print("ad_infect")
+        temp = np.array(ad_info)
+        score = np.dot(temp, self.ad_prefer_coef)
+        # print(score)
+        self.info.loc[self.info.id == product_id, 'ad_effect'] = \
+            self.info.loc[self.info.id == product_id, 'ad_effect'].values + score
 
     def update(self):
         for i in self.neighbor_infect_list:
             if i[4] < 0:
                 self.neighbor_infect_list.remove(i)
-                print(i)
+                # print(i)
             else:
                 i[4] = i[4] - 1
-                print(i)
+                # print(i)
 
     def age_matching(self, age):
         if age < 18:
@@ -193,7 +263,6 @@ class Consumer(Agent):
 
     def get_this_product(self, product_id) -> Product:
         products = [x for x in self.model.schedule.agents if isinstance(x, Product)]
-        print([x.product_id for x in products])
         this_product = [x for x in products if x.product_id == product_id][0]
         return this_product
 
