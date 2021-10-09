@@ -52,11 +52,22 @@ class ModelRun:
             print_time("请学生进行第{}期决策".format(i))
             if i == 0:
                 student_init_json_path = input("请输入第{}期决策文件：".format(i))
-                ## 获取消费者决策数据文件（由学生进行创建）
+                ## 获取消费者决策数据文件
+                ## 前端收集整理并整合成json格式文件, 文件样例：data/student_init.json
                 with open(student_init_json_path, 'r', encoding='utf-8') as load_f:
                     my_brand = json.load(load_f)
-                    print_time("已加载学生决策")
+                    print_time("已加载第{}期学生决策".format(i))
                 market.student_strategy_init(my_brand)
+
+            if i > 0 and i <= n_period:
+                student_strategy_json_path = input("请输入第{}期决策文件：".format(i))
+                ## 获取消费者决策数据文件
+                ## 前端收集整理并整合成json格式文件，文件样例：data/student_strategy.json
+                ## 每一期需要一个决策文件
+                with open(student_strategy_json_path, 'r', encoding='utf-8') as load_f:
+                    student_strategy = json.load(load_f)
+                    print_time("已加载第{}期学生决策".format(i))
+                market.student_strategy_change(student_strategy)
 
             print_time("正在向模型加载学生第{}期决策".format(i))
             print_time("开始第{}期决策模拟".format(i))

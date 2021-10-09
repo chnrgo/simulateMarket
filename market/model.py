@@ -130,7 +130,15 @@ class Market(Model):
                               "  VALUES ({}, {}, '{}', {}, {}, {}, '{}', '{}', {}, {}, '{}', '{}')".format(product.product_id, product.belong_brand_id, product.name, product.price, product.score, product.cost, product.chengfen, product.gongxiao, product.stock, product.online_stock, product.skin_type, product.fit_age)
             sql.insert(sql_new_product, self.student_id)
 
-
+    def student_strategy_change(self, student_strategy):
+        my_products = student_strategy[0]['products']
+        all_products = [x for x in self.schedule.agents if isinstance(x, Product)]
+        for i, p in enumerate(my_products):
+            this_product = [x for x in all_products if p['name'] == x.name][0]
+            this_product.price = p['price']
+            this_product.stock = p['stock']
+            this_product.online_stock = p['online_stock']
+            this_product.ad_strategy = p['ad_strategy']
 
 def compute_product_market_share(model):
     consumers_buy_list = [x.product for x in model.schedule.agents if isinstance(x, Consumer)]
