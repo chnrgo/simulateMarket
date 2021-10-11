@@ -23,19 +23,23 @@ class Product(Agent):
         # 缺货列表
         self.out_of_order_list = []
 
-
+        self.current_sales_volume = 0
+        self.stock_cost_per = 0.5
+        self.stock_cost = 0
 
 
     def step(self) -> None:
-        # print(self.name, self.stock, self.online_stock)
-        # print(len(self.order_list), self.order_list)
-        # print(len(self.out_of_order_list), self.out_of_order_list)
-        pass
+
+        self.stock_cost = self.stock_cost + self.stock * self.stock_cost_per
+
+    # def init_target_consumers(self):
+    #     if
 
     def update_stock_price(self, stock, online_stock, price):
         self.stock = stock
         self.online_stock = online_stock
         self.price = price
+        self.stock_cost = 0
 
     def ad(self, target_consumers):
 

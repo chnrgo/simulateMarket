@@ -1,6 +1,8 @@
 [
   {
     "brand_name": "百雀羚",
+    "staff": 20000,
+    "ad_investment": 500000,
     "products": [
       {
         "name": "A",
@@ -10,7 +12,7 @@
         "chengfen": "",
         "gongxiao": "补水保湿",
         "stock": 10000,
-        "online_stock": 800,
+        "online_stock": 8000,
         "skin_type": "any",
         "fit_age": "ABC",
         "ad_strategy":{
@@ -31,9 +33,9 @@
         "chengfen": "",
         "gongxiao": "面部修复",
         "stock": 10000,
-        "online_stock": 800,
-        "skin_type": "any",
-        "fit_age": "ABC",
+        "online_stock": 8000,
+        "skin_type": "DSNT",
+        "fit_age": "CD",
         "ad_strategy":{
           "代言直播":10000,
           "网页广告":50000,
@@ -52,9 +54,9 @@
         "chengfen": "",
         "gongxiao": "补水保湿",
         "stock": 10000,
-        "online_stock": 800,
-        "skin_type": "any",
-        "fit_age": "ABC",
+        "online_stock": 8000,
+        "skin_type": "DSNT",
+        "fit_age": "BC",
         "ad_strategy":{
           "代言直播":10000,
           "网页广告":50000,

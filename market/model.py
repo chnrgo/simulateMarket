@@ -64,10 +64,8 @@ class Market(Model):
             index_temp = index_temp + 1
 
         self.datacollector = DataCollector(
-            # model_reporters={"ProductMarketShare": compute_product_market_share,
-            #                  "BrandMarketShare": compute_brand_market_share},
-            # agent_reporters={""}
-            model_reporters={"data": compute}
+            model_reporters={"data": compute,
+                             "sales_conditions": get_sales_conditions},
         )
 
         self.consumer_list = []
@@ -76,7 +74,6 @@ class Market(Model):
 
     def step(self) -> None:
         print(self.schedule.time)
-
         self.market_control()
         self.datacollector.collect(self)
         self.schedule.step()
@@ -115,6 +112,9 @@ class Market(Model):
     def student_strategy_init(self, my_brand):
         brand = Brand(8000, self, my_brand[0]['brand_name'])
         brand.status = 'student'
+
+        brand.staff = my_brand[0]['staff']
+        brand.ad_investment = my_brand[0]['ad_investment']
         self.schedule.add(brand)
         sql_new_brand = "INSERT INTO brand (id, brand_name)  VALUES ({}, '{}')".format(brand.brand_id, brand.brand_name)
         sql.insert(sql_new_brand, self.student_id)
@@ -140,22 +140,6 @@ class Market(Model):
             this_product.online_stock = p['online_stock']
             this_product.ad_strategy = p['ad_strategy']
 
-def compute_product_market_share(model):
-    consumers_buy_list = [x.product for x in model.schedule.agents if isinstance(x, Consumer)]
-    products = [x for x in model.schedule.agents if isinstance(x, Product)]
-    info = []
-    for i in products:
-        info.append([i.product_id, i.name, consumers_buy_list.count(i)])
-    return info
-
-def compute_brand_market_share(model):
-    consumers_buy_list = [x.brand for x in model.schedule.agents if isinstance(x, Consumer)]
-    brands = [x for x in model.schedule.agents if isinstance(x, Brand)]
-    info = []
-    for i in brands:
-        info.append([i.brand_id, i.brand_name, consumers_buy_list.count(i)])
-    return info
-
 def compute(model):
     consumers_buy_list = [x.brand for x in model.schedule.agents if isinstance(x, Consumer)]
     brands = [x for x in model.schedule.agents if isinstance(x, Brand)]
@@ -163,3 +147,12 @@ def compute(model):
     for i in brands:
         info[i.brand_name] = consumers_buy_list.count(i)
     return info
+
+def get_sales_conditions(model):
+    sales_conditions = {}
+    brand_list = [x for x in model.schedule.agents if isinstance(x, Brand)]
+    for i in brand_list:
+        sales_conditions[i.brand_name] = i.sales_conditions
+
+    print(sales_conditions)
+    return sales_conditions
