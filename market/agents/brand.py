@@ -32,7 +32,7 @@ class Brand(Agent):
 
         # 主模型的时间步单位为天，Brand类的决策周期为90天
         if (self.model.schedule.time - 2) % 90 == 0:
-            print(self.model.schedule.time)
+            # print(self.model.schedule.time)
             if self.status == 'agent':
                 # 计算上一期内的销售情况
                 if self.model.schedule.time >= 90:
@@ -83,7 +83,7 @@ class Brand(Agent):
         当前企业进行推广
         :return:
         '''
-        print(self.status)
+        # print(self.status)
         from market.agents.consumer import Consumer
         consumers = [x for x in self.model.schedule.agents if isinstance(x, Consumer)]
         target_consumers = random.sample(consumers, 1000)

@@ -90,7 +90,7 @@ class ModelRun:
         data = model.datacollector.get_model_vars_dataframe()
         temp = data.to_dict()
         # print(temp)
-        print(temp["data"])
+        # print(temp["data"])
         info = []
         for i in range(len(temp['data'])):
             info.append(temp['data'][i])

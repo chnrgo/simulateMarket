@@ -33,7 +33,7 @@ class Market(Model):
         sql_consumer = "SELECT * FROM consumer"
 
         brands = sql.get_data(sql_brand, student_id)
-        print(brands)
+        # print(brands)
         products = sql.get_data(sql_product, student_id)
         consumers = sql.get_data(sql_consumer, student_id)
 
@@ -154,5 +154,5 @@ def get_sales_conditions(model):
     for i in brand_list:
         sales_conditions[i.brand_name] = i.sales_conditions
 
-    print(sales_conditions)
+    # print(sales_conditions)
     return sales_conditions
