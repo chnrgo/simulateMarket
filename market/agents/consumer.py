@@ -23,7 +23,8 @@ class Consumer(Agent):
         super(Consumer, self).__init__(unique_id, model)
         self.consumer_id = unique_id
         self.name = name
-        self.age = self.age_matching(age)
+        # self.age = self.age_matching(age)
+        self.age = age
         self.gender = gender
         self.skin_type = skin_type
         self.income_level = income_level

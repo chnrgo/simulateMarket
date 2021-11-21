@@ -18,6 +18,7 @@ class Product(Agent):
         self.skin_type = skin_type
         self.fit_age = fit_age
         self.ad_strategy = {'代言直播':10000, '网页广告':50000, '搜索引擎':2000, '新媒体':5000, '路演':10000, '店面广告':50000, '印刷品':5000}
+        self.target_consumer = None
         # 购买列表
         self.order_list = []
         # 缺货列表

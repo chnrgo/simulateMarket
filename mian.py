@@ -89,21 +89,10 @@ class ModelRun:
     def plot_market_share(self, model):
         data = model.datacollector.get_model_vars_dataframe()
         temp = data.to_dict()
-        # print(temp)
-        # print(temp["data"])
         info = []
         for i in range(len(temp['data'])):
             info.append(temp['data'][i])
-        # print(data)
-        # print(info)
         plot_data = pd.DataFrame(info)
-        # if len(plot_data.columns) == 6:
-        #     plot_data.columns=['产品1', '产品2', '产品3', '产品4', '产品5', '产品6']
-        # else:
-        #     plot_data.columns = ['产品1', '产品2', '产品3', '产品4', '产品5', '产品6', '产品7']
-        # p = plot_data[['产品1', '产品2', '产品3']]
-        # print(p)
-
         plot_data.plot()
         # p.plot()
         plt.rcParams['font.sans-serif'] = ['SimHei']  # 显示中文标签

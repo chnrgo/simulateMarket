@@ -33,7 +33,7 @@ class Market(Model):
         sql_consumer = "SELECT * FROM consumer"
 
         brands = sql.get_data(sql_brand, student_id)
-        # print(brands)
+        print(brands)
         products = sql.get_data(sql_product, student_id)
         consumers = sql.get_data(sql_consumer, student_id)
 
@@ -124,6 +124,7 @@ class Market(Model):
                                  p['chengfen'], p['gongxiao'], p['stock'], p['online_stock'], p['skin_type'],
                                  p['fit_age'])
             product.ad_strategy = p['ad_strategy']
+            product.target_consumer = p['target_consumer']
             brand.products.append(product)
             self.schedule.add(product)
             sql_new_product = "INSERT INTO product (id, brand_id, name, price, score, cost, chengfen, gongxiao, stock, online_stock, skin_type, fit_age)" \

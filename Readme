@@ -1,0 +1,162 @@
+
+# 说明
+
+## 1. 主模块调用
+- run.py 文件
+### 1.1 参数说明
+- student_id: 学生id
+
+- student_init_json_path: 学生第一期决策文件，文件样例为data/student_init.json
+
+  > ```json
+  > [
+  >   {
+  >     "brand_name": "百雀羚", //品牌名称
+  >     "staff": 20000, //员工总工资
+  >     "ad_investment": 500000, //广告投入
+  >     "products": [ //产品列表
+  >       {
+  >         "name": "百雀羚——1", //产品名称
+  >         "price": 200, //产品价格
+  >         "score": 94, //产品得分
+  >         "cost": 100, //产品成本
+  >         "chengfen": "普通", //产品成分
+  >         "gongxiao": "补水保湿",
+  >         "stock": 10000, //产品总库存
+  >         "online_stock": 8000, //产品线上库存
+  >         "skin_type": "any", //产品适用肤质
+  >         "fit_age": "ABC", //适用年龄
+  >         "ad_strategy":{ //广告策略
+  >           "代言直播":10000,
+  >           "网页广告":50000,
+  >           "搜索引擎":2000,
+  >           "新媒体":5000,
+  >           "路演":10000,
+  >           "店面广告":50000,
+  >           "印刷品":5000
+  >         },
+  >        "target_consumer": "ABC" //目标受众
+  >       },
+  >       {
+  >         "name": "百雀羚——2",
+  >         "price": 320,
+  >         "score": 94,
+  >         "cost": 100,
+  >         "chengfen": "普通",
+  >         "gongxiao": "面部修复",
+  >         "stock": 10000,
+  >         "online_stock": 8000,
+  >         "skin_type": "DSNT",
+  >         "fit_age": "CD",
+  >         "ad_strategy":{
+  >           "代言直播":10000,
+  >           "网页广告":50000,
+  >           "搜索引擎":2000,
+  >           "新媒体":5000,
+  >           "路演":10000,
+  >           "店面广告":50000,
+  >           "印刷品":5000
+  >         },
+  >         "target_consumer": "ABC"
+  >       },
+  >       {
+  >         "name": "百雀羚——3",
+  >         "price": 320,
+  >         "score": 94,
+  >         "cost": 100,
+  >         "chengfen": "热门成分",
+  >         "gongxiao": "补水保湿",
+  >         "stock": 10000,
+  >         "online_stock": 8000,
+  >         "skin_type": "DSNT",
+  >         "fit_age": "BC",
+  >         "ad_strategy":{
+  >           "代言直播":10000,
+  >           "网页广告":50000,
+  >           "搜索引擎":2000,
+  >           "新媒体":5000,
+  >           "路演":10000,
+  >           "店面广告":50000,
+  >           "印刷品":5000
+  >         },
+  >         "target_consumer": "ABC"
+  >       }
+  >     ]
+  >   }
+  > ]
+  > ```
+
+- k: 小世界网络参数k，邻居个数
+
+- p: 小世界网络参数p，重连概率
+
+- 表一
+
+  | **功效字段** | 对应肤质（备注理解） | **skin_type** | **fit_age** |
+  | ------------ | -------------------- | ------------- | ----------- |
+  | 保湿补水     | 干性                 | OSNT          | ABC         |
+  | 面部修护     | 敏感+皱纹            | DSNW          | ABC         |
+  | 提亮美白     | 色素                 | DSNT          | ABC         |
+  | 紧致         | 皱纹+年龄>30         | ANY           | CD          |
+  | 舒缓         | 敏感+油性            | DSNT          | ABCD        |
+  | 控油         | 油性、男性偏好       | OSNT          | ABC         |
+
+- 表一
+
+  | **目标人群** | 对应人群年龄（备注理解） |
+  | :----------: | :----------------------: |
+  |    18以下    |            A             |
+  |    18-25     |            B             |
+  |    25-35     |            C             |
+  |     35+      |            D             |
+
+## 2. 代码运行中所需学生决策参数
+
+- mian.py 	63行
+
+- ```python
+  student_strategy_json_path = input("请输入第{}期决策文件：".format(i+1))
+  ```
+
+- 此处需加载学生的决策文件，将前台收集到的学生决策信息，汇总成一个json格式文件，文件样例data/student_strategy.json
+- 与student_init.json文件一致，只是更改其中的决策数值
+
+
+
+## 3. 数据收集
+
+- main.py
+
+- 画图相关，该函数可绘制每一期结束后的市场占有情况
+
+  - ```python
+    def plot_market_share(self, model):
+        data = model.datacollector.get_model_vars_dataframe()
+        temp = data.to_dict()
+        info = []
+        for i in range(len(temp['data'])):
+            info.append(temp['data'][i])
+        plot_data = pd.DataFrame(info)
+        plot_data.plot()
+        plt.rcParams['font.sans-serif'] = ['SimHei']  # 显示中文标签
+        plt.rcParams['axes.unicode_minus'] = False  # 设置正常显示符号
+        plt.show()
+    ```
+
+- 其他数据收集
+
+  -  可以在plot_market_share中添加其他方法，获取相关数据
+
+    ```
+    def plot_market_share(self, model):
+    '''所有销售情况表格如下，所需数据均存储在其中，需要什么请自行调用'''
+        '''具体的调用方法'''
+        print(temp['sales_conditions'])
+        ## 1.从模型中获取数据集
+        ## data = model.datacollector.get_model_vars_dataframe()
+        ## 2.将数据解析成字典
+        ## data_dict = data.to_dict()
+        ## sales_conditions = data_dict['sales_conditions']
+        ## 3.该数据表记录了每一步的销售情况，实际使用时，只需sales_conditions[index],其中index输入企业进行决策的时间步即可，如index=90
+    ```
+

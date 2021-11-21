@@ -48,7 +48,7 @@ class Brand(Agent):
                 # 学生企业进行决策
                 # self.student_enterprise_strategy() #已弃用
                 # 企业进行推广
-                self.promote()
+                self.promote_2()
 
     def init_at_0(self):
         '''
@@ -88,6 +88,17 @@ class Brand(Agent):
         consumers = [x for x in self.model.schedule.agents if isinstance(x, Consumer)]
         target_consumers = random.sample(consumers, 1000)
         for i in self.products:
+            i.ad(target_consumers)
+
+    def promote_2(self):
+        from market.agents.consumer import Consumer
+        consumers = [x for x in self.model.schedule.agents if isinstance(x, Consumer)]
+        for i in self.products:
+            temp = i.target_consumer
+            target_consumers = []
+            for j in temp:
+                temp2 = [x for x in consumers if x.age == j]
+                target_consumers.extend(temp2)
             i.ad(target_consumers)
 
 
