@@ -7,7 +7,7 @@
       {
         "name": "百雀羚——1",
         "price": 200,
-        "score": 94,
+        "score": 4.5,
         "cost": 100,
         "chengfen": "普通",
         "gongxiao": "补水保湿",
@@ -29,7 +29,7 @@
       {
         "name": "百雀羚——2",
         "price": 320,
-        "score": 94,
+        "score": 4.4,
         "cost": 100,
         "chengfen": "普通",
         "gongxiao": "面部修复",
@@ -51,7 +51,7 @@
       {
         "name": "百雀羚——3",
         "price": 320,
-        "score": 94,
+        "score": 4.6,
         "cost": 100,
         "chengfen": "热门成分",
         "gongxiao": "补水保湿",

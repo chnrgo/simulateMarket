@@ -154,6 +154,4 @@ def get_sales_conditions(model):
     brand_list = [x for x in model.schedule.agents if isinstance(x, Brand)]
     for i in brand_list:
         sales_conditions[i.brand_name] = i.sales_conditions
-
-    # print(sales_conditions)
     return sales_conditions

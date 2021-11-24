@@ -5,11 +5,11 @@
     "ad_investment": 500000,
     "products": [
       {
-        "name": "A",
+        "name": "百雀羚——1",
         "price": 200,
         "score": 94,
         "cost": 100,
-        "chengfen": "",
+        "chengfen": "普通",
         "gongxiao": "补水保湿",
         "stock": 10000,
         "online_stock": 8000,
@@ -27,11 +27,11 @@
         "target_consumer": "ABC"
       },
       {
-        "name": "B",
+        "name": "百雀羚——2",
         "price": 320,
         "score": 94,
         "cost": 100,
-        "chengfen": "",
+        "chengfen": "普通",
         "gongxiao": "面部修复",
         "stock": 10000,
         "online_stock": 8000,
@@ -49,11 +49,11 @@
         "target_consumer": "CD"
       },
       {
-        "name": "C",
+        "name": "百雀羚——3",
         "price": 320,
         "score": 94,
         "cost": 100,
-        "chengfen": "",
+        "chengfen": "热门成分",
         "gongxiao": "补水保湿",
         "stock": 10000,
         "online_stock": 8000,

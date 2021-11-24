@@ -8,10 +8,6 @@ from market.agents.product import Product
 
 
 class Brand(Agent):
-    '''
-
-
-    '''
     def __init__(self, unique_id, model, brand_name, yield_change_rate=None, price_change_rate=None, ad_strategy=None):
         super(Brand, self).__init__(unique_id, model)
         self.brand_id = unique_id
@@ -29,7 +25,6 @@ class Brand(Agent):
         # 模型在第一步时，进行初始化
         if self.model.schedule.time == 0:
             self.init_at_0()
-
         # 主模型的时间步单位为天，Brand类的决策周期为90天
         if (self.model.schedule.time - 2) % 90 == 0:
             # print(self.model.schedule.time)
@@ -106,17 +101,18 @@ class Brand(Agent):
     def compute_sales_conditions(self):
 
         info = []
-        info_detail = {
-            "产品id": '',
-            "产品名称": '',
-            "产品销量": '',
-            "产品价格": '',
-            "产品成本": '',
-            "产品广告费用": '',
-            "产品渠道销售费用": '',
-            "产品库存成本": '',
-        }
+
         for i in self.products:
+            info_detail = {
+                "产品id": '',
+                "产品名称": '',
+                "产品销量": '',
+                "产品价格": '',
+                "产品成本": '',
+                "产品广告费用": '',
+                "产品渠道销售费用": '',
+                "产品库存成本": '',
+            }
             info_detail["产品id"] = i.product_id
             info_detail["产品名称"] = i.name
             info_detail["产品销量"] = i.current_sales_volume
@@ -129,6 +125,8 @@ class Brand(Agent):
             info_detail["产品库存成本"] = i.stock_cost
 
             info.append(info_detail)
+            print("内部", info)
+        print(info)
         self.sales_conditions.append(info)
 
         # print(info)
